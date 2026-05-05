@@ -1,20 +1,37 @@
 'use client';
 
+/**
+ * app/savings/page.tsx
+ * =====================
+ * 節約候補ページ。
+ *
+ * v2.3 変更点:
+ * - 代替案・見直し提案セクションを追加（generateAlternatives を使用）
+ * - 既存の重複候補・未使用候補セクションは変更なし
+ */
+
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { PlusCircle, Sparkles } from 'lucide-react';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { detectDuplicates, detectUnused } from '@/lib/savings';
+import { generateAlternatives } from '@/lib/alternatives';
 import { getTodayStr, formatCurrency } from '@/lib/billing';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { SavingsSummaryCard } from '@/components/savings/SavingsSummaryCard';
 import { DuplicateCard } from '@/components/savings/DuplicateCard';
 import { UnusedCard } from '@/components/savings/UnusedCard';
+import { AlternativeCard } from '@/components/savings/AlternativeCard';
 import type { SavingOpportunity } from '@/types';
+
+// 代替案の最大表示件数
+const MAX_ALTERNATIVES = 5;
 
 export default function SavingsPage() {
   const { subscriptions, loading, updateSubscription } = useSubscriptions();
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
+
+  // ── 既存ロジック（変更なし）────────────────────────────────────
 
   const duplicateOpportunities = useMemo(
     () => detectDuplicates(subscriptions),
@@ -54,6 +71,15 @@ export default function SavingsPage() {
   const totalOpportunityCount =
     duplicateOpportunities.length + unusedOpportunities.length;
 
+  // ── 代替案ロジック（v2.3 追加）──────────────────────────────────
+
+  const alternativeSuggestions = useMemo(
+    () => generateAlternatives(subscriptions, MAX_ALTERNATIVES),
+    [subscriptions],
+  );
+
+  // ── ハンドラ（変更なし）───────────────────────────────────────
+
   const handleConfirmActive = async (subscriptionId: string) => {
     setConfirmingId(subscriptionId);
     await updateSubscription(subscriptionId, {
@@ -61,6 +87,10 @@ export default function SavingsPage() {
     });
     setConfirmingId(null);
   };
+
+  // ================================================================
+  // ローディング
+  // ================================================================
 
   if (loading) {
     return (
@@ -73,6 +103,10 @@ export default function SavingsPage() {
       </div>
     );
   }
+
+  // ================================================================
+  // サブスクが0件
+  // ================================================================
 
   if (subscriptions.length === 0) {
     return (
@@ -101,7 +135,11 @@ export default function SavingsPage() {
     );
   }
 
-  if (totalOpportunityCount === 0) {
+  // ================================================================
+  // 節約候補もなく代替案もない
+  // ================================================================
+
+  if (totalOpportunityCount === 0 && alternativeSuggestions.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50">
         <PageHeader title="節約候補" backHref="/" />
@@ -118,17 +156,26 @@ export default function SavingsPage() {
     );
   }
 
+  // ================================================================
+  // メイン表示
+  // ================================================================
+
   return (
     <div className="min-h-screen bg-slate-50">
       <PageHeader title="節約候補" backHref="/" />
 
       <div className="px-4 pt-4 pb-6 space-y-5">
-        <SavingsSummaryCard
-          totalMonthlySaving={totalSavings.monthly}
-          totalYearlySaving={totalSavings.yearly}
-          opportunityCount={totalOpportunityCount}
-        />
 
+        {/* 節約合計サマリー */}
+        {totalOpportunityCount > 0 && (
+          <SavingsSummaryCard
+            totalMonthlySaving={totalSavings.monthly}
+            totalYearlySaving={totalSavings.yearly}
+            opportunityCount={totalOpportunityCount}
+          />
+        )}
+
+        {/* 重複候補 */}
         {duplicateOpportunities.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
@@ -146,6 +193,7 @@ export default function SavingsPage() {
           </section>
         )}
 
+        {/* 未使用候補 */}
         {unusedOpportunities.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
@@ -162,6 +210,31 @@ export default function SavingsPage() {
                   opportunity={op}
                   onConfirmActive={handleConfirmActive}
                   isConfirming={confirmingId === op.subscriptions[0]?.id}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── v2.3 追加：代替案・見直し提案セクション ── */}
+        {alternativeSuggestions.length > 0 && (
+          <section>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">🔀</span>
+              <h2 className="text-sm font-bold text-slate-700">代替案・見直し提案</h2>
+              <span className="text-xs text-slate-400 bg-slate-200 rounded-full px-2 py-0.5">
+                {alternativeSuggestions.length}件
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mb-3 leading-relaxed">
+              契約中のサービスに対して、継続価値や比較候補を表示します。
+              あくまで参考情報です。
+            </p>
+            <div className="space-y-3">
+              {alternativeSuggestions.map((suggestion) => (
+                <AlternativeCard
+                  key={suggestion.subscription.id}
+                  suggestion={suggestion}
                 />
               ))}
             </div>

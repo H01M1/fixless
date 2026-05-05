@@ -187,6 +187,13 @@ export interface ServiceTemplate {
    * App Store 経由で課金されるサービスに true を付ける。
    */
   appStoreLikely?: boolean;
+  alternativeIds?: string[];
+  strengths?: string[];
+  weaknesses?: string[];
+  bestFor?: string[];
+  notBestFor?: string[];
+  downgradeOptions?: string[];
+  bundleWarnings?: string[];
 }
 
 // ================================================================
@@ -279,6 +286,30 @@ export interface PendingSubscription {
    * defaultAmountMonthly がある場合は最初から true。
    */
   isAmountConfirmed: boolean;
+}
+
+// ================================================================
+// 代替サブスク提案
+// ================================================================
+
+export interface AlternativeOption {
+  service: ServiceTemplate;
+  estimatedMonthlySaving: number;
+}
+
+export interface DowngradeOption {
+  service: ServiceTemplate;
+  planName: string;
+  estimatedMonthlySaving: number;
+}
+
+export interface AlternativeSuggestion {
+  subscription: Subscription;
+  reasonsToKeep: string[];
+  reasonsToReconsider: string[];
+  alternatives: AlternativeOption[];
+  downgradeOptions: DowngradeOption[];
+  bundleWarnings: string[];
 }
 
 // ================================================================
