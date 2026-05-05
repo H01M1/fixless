@@ -5,11 +5,15 @@
  * ===========================================
  * 日本サービスDBからサブスクを選んで追加するコンポーネント。
  *
- * UX フロー:
- * 1. 検索バー + カテゴリチップでサービスを絞り込む
- * 2. サービスをタップ → ServiceConfirmModal が開く
- * 3. モーダルで金額・請求日等を確認・編集して「登録する」
- * 4. 登録成功 → 親コンポーネント（page.tsx）がホームに遷移する
+ * v2.1 変更点:
+ * - selectedServiceForPlan state を追加
+ * - サービス選択時のロジックを3パターンに分岐
+ *   ① plans が2件以上 → PlanPicker を表示
+ *   ② plans が1件のみ → そのプランをマージしてモーダルへ
+ *   ③ plans がない   → 従来どおりモーダルへ（変更なし）
+ * - PlanPicker でプランが選ばれたら name と金額をマージして
+ *   ServiceConfirmModal にそのまま渡す（モーダル側の変更なし）
+ * - 既存の検索・カテゴリ絞り込み・確認モーダルは変更なし
  */
 
 import { useState, useMemo } from 'react';
@@ -25,62 +29,105 @@ import {
 } from '@/lib/serviceDb';
 import { formatCurrency } from '@/lib/billing';
 import { ServiceConfirmModal } from '@/components/subscription/ServiceConfirmModal';
-import type { Category, ServiceTemplate, SubscriptionInput } from '@/types';
+import { PlanPicker } from '@/components/subscription/PlanPicker';
+import type { Category, ServiceTemplate, ServicePlan, SubscriptionInput } from '@/types';
+import { CATEGORY_EMOJIS } from '@/types';
+
+// ================================================================
+// Props
+// ================================================================
 
 interface ServicePickerProps {
-  /** 登録ボタンが押されたときに呼ぶ。成功: true, 失敗: false */
   onAdd: (input: SubscriptionInput) => Promise<boolean>;
 }
 
+// ================================================================
+// ServicePicker
+// ================================================================
+
 export function ServicePicker({ onAdd }: ServicePickerProps) {
-  const [searchQuery, setSearchQuery]           = useState('');
+  // ── 既存の state ──────────────────────────────────────────────
+  const [searchQuery, setSearchQuery]         = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  /** 確認モーダルを開くサービス（プラン情報をマージ済みの ServiceTemplate） */
   const [selectedService, setSelectedService]   = useState<ServiceTemplate | null>(null);
 
-  // ─── サービス一覧のフィルタリング ────────────────────────
+  // ── v2.1 追加 state ──────────────────────────────────────────
+  /**
+   * PlanPicker を表示するサービス。
+   * サービスをタップして plans が2件以上あるときにセットされる。
+   * PlanPicker で戻るを押すと null に戻る。
+   */
+  const [selectedServiceForPlan, setSelectedServiceForPlan] =
+    useState<ServiceTemplate | null>(null);
+
+  // ── サービス一覧のフィルタリング（既存のまま）──────────────
 
   const displayedServices = useMemo(() => {
-    // 検索クエリがあれば検索結果を優先（カテゴリ選択を無視）
-    if (searchQuery.trim()) {
-      return searchServices(searchQuery);
-    }
-    // カテゴリが選ばれていればそのカテゴリのみ
-    if (selectedCategory) {
-      return getServicesByCategory(selectedCategory);
-    }
-    // デフォルト: 全サービス
+    if (searchQuery.trim()) return searchServices(searchQuery);
+    if (selectedCategory)   return getServicesByCategory(selectedCategory);
     return getAllServices();
   }, [searchQuery, selectedCategory]);
 
-  // カテゴリ一覧（サービスが存在するものだけ）
-  const categories       = getPopulatedCategories();
-  const serviceCounts    = getServiceCountByCategory();
+  const categories    = getPopulatedCategories();
+  const serviceCounts = getServiceCountByCategory();
 
-  // ─── ハンドラ ────────────────────────────────────────────
+  // ── ハンドラ ──────────────────────────────────────────────────
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    // 検索開始時はカテゴリ選択をリセット
     if (e.target.value) setSelectedCategory(null);
   };
 
-  const handleClearSearch = () => {
-    setSearchQuery('');
-  };
+  const handleClearSearch = () => setSearchQuery('');
 
   const handleCategorySelect = (cat: Category | null) => {
     setSelectedCategory(cat);
-    setSearchQuery(''); // カテゴリ変更時は検索クエリをクリア
+    setSearchQuery('');
   };
 
+  /**
+   * サービスがタップされたときの処理。
+   * plans の件数によって3パターンに分岐する。
+   */
   const handleServiceSelect = (service: ServiceTemplate) => {
-    setSelectedService(service);
+    const plans = service.plans ?? [];
+
+    if (plans.length >= 2) {
+      // ① 2件以上のプランがある → PlanPicker を表示
+      setSelectedServiceForPlan(service);
+    } else if (plans.length === 1) {
+      // ② プランが1件のみ → そのプランをマージしてモーダルへ
+      const merged = mergePlanIntoService(service, plans[0]);
+      setSelectedService(merged);
+    } else {
+      // ③ プランなし → 従来どおりモーダルへ
+      setSelectedService(service);
+    }
   };
 
+  /**
+   * PlanPicker でプランが選ばれたときの処理。
+   * プラン情報をサービスにマージして ServiceConfirmModal に渡す。
+   * ServiceConfirmModal 自体は変更なし。
+   */
+  const handlePlanSelect = (service: ServiceTemplate, plan: ServicePlan) => {
+    const merged = mergePlanIntoService(service, plan);
+    setSelectedService(merged);
+    setSelectedServiceForPlan(null); // PlanPicker を閉じる
+  };
+
+  /** PlanPicker の戻るボタンが押されたとき */
+  const handlePlanBack = () => {
+    setSelectedServiceForPlan(null);
+  };
+
+  /** モーダルを閉じる */
   const handleModalClose = () => {
     setSelectedService(null);
   };
 
+  /** モーダルから登録ボタンが押されたとき */
   const handleModalAdd = async (input: SubscriptionInput): Promise<boolean> => {
     const success = await onAdd(input);
     if (success) setSelectedService(null);
@@ -88,12 +135,36 @@ export function ServicePicker({ onAdd }: ServicePickerProps) {
   };
 
   // ================================================================
-  // レンダリング
+  // PlanPicker が表示中の場合
+  // ================================================================
+
+  if (selectedServiceForPlan) {
+    return (
+      <>
+        <PlanPicker
+          service={selectedServiceForPlan}
+          onSelectPlan={handlePlanSelect}
+          onBack={handlePlanBack}
+        />
+        {/* モーダルは PlanPicker の上に重なる */}
+        {selectedService && (
+          <ServiceConfirmModal
+            service={selectedService}
+            onClose={handleModalClose}
+            onAdd={handleModalAdd}
+          />
+        )}
+      </>
+    );
+  }
+
+  // ================================================================
+  // 通常のサービス一覧表示
   // ================================================================
 
   return (
     <>
-      {/* ─── 検索バー ─────────────────────────────────────── */}
+      {/* ── 検索バー ── */}
       <div className="px-4 pt-4 pb-3 bg-white border-b border-slate-100">
         <div className="relative">
           <Search
@@ -127,13 +198,12 @@ export function ServicePicker({ onAdd }: ServicePickerProps) {
         </div>
       </div>
 
-      {/* ─── カテゴリチップ（検索中は非表示） ──────────────── */}
+      {/* ── カテゴリチップ（検索中は非表示） ── */}
       {!searchQuery && (
         <div
           className="flex gap-2 px-4 py-3 overflow-x-auto bg-white border-b border-slate-100"
-          style={{ scrollbarWidth: 'none' }} // Firefox
+          style={{ scrollbarWidth: 'none' }}
         >
-          {/* 「すべて」チップ */}
           <button
             onClick={() => handleCategorySelect(null)}
             className={`
@@ -148,7 +218,6 @@ export function ServicePicker({ onAdd }: ServicePickerProps) {
             すべて（{getAllServices().length}）
           </button>
 
-          {/* カテゴリチップ */}
           {categories.map((cat) => {
             const isActive = selectedCategory === cat;
             const count    = serviceCounts.get(cat) ?? 0;
@@ -177,10 +246,8 @@ export function ServicePicker({ onAdd }: ServicePickerProps) {
         </div>
       )}
 
-      {/* ─── サービス一覧 ─────────────────────────────────── */}
+      {/* ── サービス一覧 ── */}
       <div className="divide-y divide-slate-100 bg-white mt-2 mx-4 rounded-xl overflow-hidden shadow-sm border border-slate-100">
-
-        {/* 0件のとき */}
         {displayedServices.length === 0 && (
           <div className="flex flex-col items-center py-12 px-6 text-center">
             <p className="text-slate-400 text-sm">
@@ -192,7 +259,6 @@ export function ServicePicker({ onAdd }: ServicePickerProps) {
           </div>
         )}
 
-        {/* サービスリスト */}
         {displayedServices.map((service) => (
           <ServiceItem
             key={service.id}
@@ -202,7 +268,7 @@ export function ServicePicker({ onAdd }: ServicePickerProps) {
         ))}
       </div>
 
-      {/* ─── サービス件数テキスト ────────────────────────── */}
+      {/* ── サービス件数テキスト ── */}
       {displayedServices.length > 0 && (
         <p className="text-center text-xs text-slate-400 mt-3">
           {searchQuery
@@ -214,7 +280,7 @@ export function ServicePicker({ onAdd }: ServicePickerProps) {
         </p>
       )}
 
-      {/* ─── 確認モーダル ────────────────────────────────── */}
+      {/* ── 確認モーダル ── */}
       {selectedService && (
         <ServiceConfirmModal
           service={selectedService}
@@ -227,7 +293,38 @@ export function ServicePicker({ onAdd }: ServicePickerProps) {
 }
 
 // ================================================================
-// サービスアイテム（リスト1行分）
+// プラン情報をサービスにマージするユーティリティ
+// ================================================================
+
+/**
+ * サービスとプランをマージして、ServiceConfirmModal に渡せる
+ * ServiceTemplate を生成する。
+ *
+ * - name:                 "Netflix スタンダード"（サービス名 + プラン名）
+ * - defaultAmountMonthly: プランの月額
+ * - defaultBillingCycle:  プランの請求サイクル
+ * - その他のフィールド:   親サービスから引き継ぐ（iconUrl・cancellationUrl など）
+ *
+ * ServiceConfirmModal は受け取った service.name と
+ * service.defaultAmountMonthly を初期値に使うだけなので、
+ * モーダル側の変更は不要。
+ */
+function mergePlanIntoService(
+  service: ServiceTemplate,
+  plan: ServicePlan,
+): ServiceTemplate {
+  return {
+    ...service,
+    // サービス名 + プラン名を結合
+    // 例: "Netflix" + "スタンダード" → "Netflix スタンダード"
+    name: `${service.name} ${plan.planName}`,
+    defaultAmountMonthly: plan.defaultAmountMonthly,
+    defaultBillingCycle:  plan.defaultBillingCycle,
+  };
+}
+
+// ================================================================
+// ServiceItem（サービスリスト1行分）
 // ================================================================
 
 interface ServiceItemProps {
@@ -237,6 +334,10 @@ interface ServiceItemProps {
 
 function ServiceItem({ service, onSelect }: ServiceItemProps) {
   const [iconError, setIconError] = useState(false);
+
+  // プランがある場合は金額の代わりに「〇プラン」と表示する
+  const hasPlans   = (service.plans?.length ?? 0) >= 2;
+  const planCount  = service.plans?.length ?? 0;
 
   return (
     <button
@@ -256,7 +357,7 @@ function ServiceItem({ service, onSelect }: ServiceItemProps) {
           />
         ) : (
           <span className="text-xl" aria-hidden="true">
-            {getCategoryEmoji(service.category)}
+            {CATEGORY_EMOJIS[service.category]}
           </span>
         )}
       </div>
@@ -271,9 +372,15 @@ function ServiceItem({ service, onSelect }: ServiceItemProps) {
         </p>
       </div>
 
-      {/* 金額 + 矢印 */}
+      {/* 金額 or プラン数 + 矢印 */}
       <div className="flex-shrink-0 flex items-center gap-2">
-        {service.defaultAmountMonthly ? (
+        {hasPlans ? (
+          /* プランありのサービスは「〇プラン」と表示 */
+          <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">
+            {planCount}プラン
+          </span>
+        ) : service.defaultAmountMonthly ? (
+          /* プランなしのサービスは月額を表示 */
           <span className="text-sm font-medium text-slate-600">
             {formatCurrency(service.defaultAmountMonthly)}
             <span className="text-xs text-slate-400 font-normal">/月</span>
