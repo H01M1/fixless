@@ -17,6 +17,7 @@ import { Noto_Sans_JP } from 'next/font/google';
 import './globals.css';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { InstallPrompt } from '@/components/pwa/InstallPrompt';
+import { AuthProvider } from '@/providers/AuthProvider';
 
 // ================================================================
 // フォント設定
@@ -139,23 +140,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body className="font-sans antialiased" suppressHydrationWarning>
-        {/*
-         * max-w-md で中央配置。
-         * デスクトップでもスマホアプリのような表示になる。
-         */}
-        <div className="max-w-md mx-auto min-h-screen bg-slate-50 relative shadow-[0_0_40px_rgba(0,0,0,0.06)]">
-          {/* pb-nav: BottomNav の高さ + safe-area-inset-bottom */}
-          <main className="pb-nav">
-            {children}
-          </main>
-        </div>
-
-        {/* BottomNav: 画面下部に固定 */}
-        <BottomNav />
-
-        {/* InstallPrompt: iOS 向けホーム画面追加バナー */}
-        <InstallPrompt />
-      </body>
+  <AuthProvider>
+    <div className="max-w-md mx-auto min-h-screen bg-slate-50 relative shadow-[0_0_40px_rgba(0,0,0,0.06)]">
+      <main className="pb-nav">
+        {children}
+      </main>
+    </div>
+    <BottomNav />
+    <InstallPrompt />
+  </AuthProvider>
+</body>
     </html>
   );
 }

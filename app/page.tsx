@@ -10,6 +10,8 @@ import { formatCurrency, formatDate, formatDaysUntil } from '@/lib/billing';
 import { SummaryCard, SummaryCardSkeleton } from '@/components/dashboard/SummaryCard';
 import { SavingBanner } from '@/components/dashboard/SavingBanner';
 import { SubscriptionList } from '@/components/dashboard/SubscriptionList';
+import { UserMenu } from '@/components/auth/UserMenu';
+import { SyncPrompt } from '@/components/auth/SyncPrompt';
 
 export default function DashboardPage() {
   const { subscriptions, loading, error, deleteSubscription } = useSubscriptions();
@@ -39,10 +41,13 @@ export default function DashboardPage() {
           <h1 className="text-xl font-black text-indigo-700 tracking-tight">FixLess</h1>
           <p className="text-[10px] text-slate-400 font-medium mt-0.5">固定費を減らす節約アシスタント</p>
         </div>
-        <Link href="/add" className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm active:bg-indigo-700 transition-colors">
-          <PlusCircle size={15} strokeWidth={2.5} />
-          追加
-        </Link>
+        <div className="flex items-center gap-2">
+          <UserMenu />
+          <Link href="/add" className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm active:bg-indigo-700 transition-colors">
+            <PlusCircle size={15} strokeWidth={2.5} />
+            追加
+          </Link>
+        </div>
       </header>
 
       {loading ? <SummaryCardSkeleton /> : (
@@ -51,6 +56,10 @@ export default function DashboardPage() {
           totalYearly={summary.totalYearly}
           subscriptionCount={summary.subscriptionCount}
         />
+      )}
+
+      {!loading && (
+        <SyncPrompt subscriptionCount={subscriptions.length} />
       )}
 
       {!loading && (
