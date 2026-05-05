@@ -3,20 +3,8 @@
  * ================
  * 日本向けサービスDB。
  *
- * v2.1 変更点:
- * - 優先8件をプラン対応に変更（plans[] を追加）
- *   Netflix / Claude / ChatGPT / Spotify / iCloud+ /
- *   Google One / Adobe / YouTube Music
- * - appStoreLikely フラグを追加（スクショ追加機能の候補リスト用）
- * - iCloud 50GB/200GB を icloud に統合
- * - Google One 100GB/2TB を google-one に統合
- * - 合計エントリ数: 28件（プランを含むと選択肢は大幅に増加）
- *
- * ⚠️ serviceId の変更について:
- *   netflix-standard → netflix など ID が変わるため、
- *   既存 Subscription の serviceId が参照できなくなる場合がある。
- *   Subscription 自体のデータ（name/amount など）は消えない。
- *   解約ガイドのリンクだけ「まだ登録されていません」になる場合がある。
+ * v2.2 変更点:
+ * - App Store 経由サービスに aliases を追加（OCRマッチング精度向上）
  */
 
 import type { ServiceTemplate } from '@/types';
@@ -37,6 +25,7 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'video',
     provider: 'Netflix',
     appStoreLikely: true,
+    aliases: ['ネットフリックス', 'net flix', 'netflix japan'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=netflix.com&sz=64',
     defaultAmountMonthly: 1590,
     defaultBillingCycle: 'monthly',
@@ -79,6 +68,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'ゆーねくすと',
     category: 'video',
     appStoreLikely: false,
+    aliases: ['ユーネクスト', 'unext japan'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=unext.jp&sz=64',
     defaultAmountMonthly: 2189,
     defaultBillingCycle: 'monthly',
@@ -98,6 +88,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'でぃずにーぷらす',
     category: 'video',
     appStoreLikely: true,
+    aliases: ['disney', 'disney plus', 'ディズニー', 'ディズニープラス', 'disneyplus'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=disneyplus.com&sz=64',
     defaultAmountMonthly: 990,
     defaultBillingCycle: 'monthly',
@@ -117,6 +108,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'ふーる',
     category: 'video',
     appStoreLikely: true,
+    aliases: ['フール', 'フールー', 'hulu japan', 'hulujapan'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=hulu.jp&sz=64',
     defaultAmountMonthly: 1026,
     defaultBillingCycle: 'monthly',
@@ -135,6 +127,11 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'あまぞんぷらいむ',
     category: 'video',
     appStoreLikely: true,
+    aliases: [
+      'prime video', 'amazon prime video', 'amazonプライム',
+      'アマゾンプライム', 'アマプラ', 'prime', 'プライムビデオ',
+      'プライム', 'amazon prime membership',
+    ],
     iconUrl: 'https://www.google.com/s2/favicons?domain=amazon.co.jp&sz=64',
     defaultAmountMonthly: 600,
     defaultBillingCycle: 'monthly',
@@ -154,6 +151,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'あべまぷれみあむ',
     category: 'video',
     appStoreLikely: true,
+    aliases: ['abema', 'アベマ', 'abema premium', 'abemapremium', 'abema tv'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=abema.tv&sz=64',
     defaultAmountMonthly: 960,
     defaultBillingCycle: 'monthly',
@@ -178,6 +176,7 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'music',
     provider: 'Spotify',
     appStoreLikely: true,
+    aliases: ['スポティファイ', 'spotify premium', 'spotifypremium', 'spotify individual'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=spotify.com&sz=64',
     defaultAmountMonthly: 980,
     defaultBillingCycle: 'monthly',
@@ -227,6 +226,7 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'music',
     provider: 'Apple',
     appStoreLikely: true,
+    aliases: ['applemusic', 'アップルミュージック', 'apple music individual', 'apple music family', 'apple music student'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=apple.com&sz=64',
     defaultAmountMonthly: 1080,
     defaultBillingCycle: 'monthly',
@@ -246,6 +246,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'あまぞんみゅーじっく あんりみてっど',
     category: 'music',
     appStoreLikely: false,
+    aliases: ['amazon music', 'アマゾンミュージック', 'music unlimited'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=music.amazon.co.jp&sz=64',
     defaultAmountMonthly: 980,
     defaultBillingCycle: 'monthly',
@@ -265,6 +266,7 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'music',
     provider: 'Google',
     appStoreLikely: true,
+    aliases: ['youtube music premium', 'yt music', 'ytmusic', 'ユーチューブミュージック', 'youtubemusic'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=music.youtube.com&sz=64',
     defaultAmountMonthly: 980,
     defaultBillingCycle: 'monthly',
@@ -311,6 +313,7 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'ai',
     provider: 'OpenAI',
     appStoreLikely: true,
+    aliases: ['openai', 'chat gpt', 'chatgpt plus', 'chatgptplus', 'gpt plus', 'gpt4', 'openai chatgpt'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=openai.com&sz=64',
     defaultAmountMonthly: 3000,
     defaultBillingCycle: 'monthly',
@@ -348,6 +351,7 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'ai',
     provider: 'Anthropic',
     appStoreLikely: true,
+    aliases: ['anthropic', 'claude pro', 'claudepro', 'claude max', 'anthropic claude'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=claude.ai&sz=64',
     defaultAmountMonthly: 3000,
     defaultBillingCycle: 'monthly',
@@ -392,6 +396,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'じぇみにあどばんすど',
     category: 'ai',
     appStoreLikely: false,
+    aliases: ['gemini', 'google gemini', 'google one ai', 'gemini pro'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=gemini.google.com&sz=64',
     defaultAmountMonthly: 2900,
     defaultBillingCycle: 'monthly',
@@ -411,6 +416,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'こぱいろっとぷろ',
     category: 'ai',
     appStoreLikely: false,
+    aliases: ['microsoft copilot', 'copilot', 'bing chat', 'microsoft ai'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=microsoft.com&sz=64',
     defaultAmountMonthly: 3200,
     defaultBillingCycle: 'monthly',
@@ -435,6 +441,11 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'cloud',
     provider: 'Apple',
     appStoreLikely: true,
+    aliases: [
+      'icloud', 'icloud storage', 'icloudストレージ',
+      'icloud drive', 'icloudplus', 'icloud backup',
+      'アイクラウド', 'icloud plus',
+    ],
     iconUrl: 'https://www.google.com/s2/favicons?domain=icloud.com&sz=64',
     defaultAmountMonthly: 400,
     defaultBillingCycle: 'monthly',
@@ -492,6 +503,7 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'cloud',
     provider: 'Google',
     appStoreLikely: false,
+    aliases: ['googleone', 'グーグルワン', 'google storage', 'google drive storage'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=one.google.com&sz=64',
     defaultAmountMonthly: 250,
     defaultBillingCycle: 'monthly',
@@ -546,6 +558,7 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'software',
     provider: 'Adobe',
     appStoreLikely: false,
+    aliases: ['adobe cc', 'creative cloud', 'adobecc', 'photoshop', 'illustrator', 'adobe creative cloud'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=adobe.com&sz=64',
     defaultAmountMonthly: 6028,
     defaultBillingCycle: 'monthly',
@@ -606,6 +619,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'まいくろそふとさんびゃくろくじゅうご',
     category: 'software',
     appStoreLikely: false,
+    aliases: ['office 365', 'microsoft office', 'microsoft365', 'm365', 'office personal'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=microsoft.com&sz=64',
     defaultAmountMonthly: 1082,
     defaultBillingCycle: 'monthly',
@@ -623,6 +637,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'のーしょんぷらす',
     category: 'software',
     appStoreLikely: false,
+    aliases: ['notion', 'ノーション', 'notion pro', 'notion personal'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=notion.so&sz=64',
     defaultAmountMonthly: 1650,
     defaultBillingCycle: 'monthly',
@@ -640,6 +655,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'きゃんばぷろ',
     category: 'software',
     appStoreLikely: false,
+    aliases: ['canva', 'キャンバ', 'canvapro'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=canva.com&sz=64',
     defaultAmountMonthly: 1700,
     defaultBillingCycle: 'monthly',
@@ -661,6 +677,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'きんどるあんりみてっど',
     category: 'book',
     appStoreLikely: true,
+    aliases: ['kindle', 'キンドル', 'kindleunlimited', 'amazon kindle', 'kindle reading'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=amazon.co.jp&sz=64',
     defaultAmountMonthly: 980,
     defaultBillingCycle: 'monthly',
@@ -678,6 +695,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'らくてんまがじん',
     category: 'book',
     appStoreLikely: false,
+    aliases: ['楽天', 'rakuten', 'rakutenmagazine', 'マガジン'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=magazine.rakuten.co.jp&sz=64',
     defaultAmountMonthly: 418,
     defaultBillingCycle: 'monthly',
@@ -699,6 +717,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'えにたいむふぃっとねす',
     category: 'gym',
     appStoreLikely: false,
+    aliases: ['anytime', 'エニタイム', 'anytimefitness'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=anytimefitness.co.jp&sz=64',
     defaultAmountMonthly: 7700,
     defaultBillingCycle: 'monthly',
@@ -716,6 +735,7 @@ export const SERVICES: ServiceTemplate[] = [
     category: 'gym',
     provider: 'Apple',
     appStoreLikely: true,
+    aliases: ['fitness+', 'apple fitness', 'fitnessplus', 'フィットネス', 'apple fitness plus', 'fitness plus'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=apple.com&sz=64',
     defaultAmountMonthly: 1200,
     defaultBillingCycle: 'monthly',
@@ -738,6 +758,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'でゅおりんごすーぱー',
     category: 'education',
     appStoreLikely: true,
+    aliases: ['duolingo', 'デュオリンゴ', 'duolingo plus', 'duolingosuper', 'duolingo super'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=duolingo.com&sz=64',
     defaultAmountMonthly: 916,
     defaultBillingCycle: 'monthly',
@@ -756,6 +777,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'すたでぃさぷり',
     category: 'education',
     appStoreLikely: false,
+    aliases: ['studysapuri', 'スタサプ', 'リクルート スタディ', 'study sapuri'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=studysapuri.jp&sz=64',
     defaultAmountMonthly: 2178,
     defaultBillingCycle: 'monthly',
@@ -778,6 +800,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'にっけいでんしばん',
     category: 'news',
     appStoreLikely: false,
+    aliases: ['日経', '日本経済新聞', 'nikkei', '日経新聞', 'nikkei digital'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=nikkei.com&sz=64',
     defaultAmountMonthly: 4277,
     defaultBillingCycle: 'monthly',
@@ -795,6 +818,7 @@ export const SERVICES: ServiceTemplate[] = [
     nameKana: 'にゅーずぴっくすぷれみあむ',
     category: 'news',
     appStoreLikely: false,
+    aliases: ['newspicks', 'ニューズピックス', 'news picks', 'newspicks premium'],
     iconUrl: 'https://www.google.com/s2/favicons?domain=newspicks.com&sz=64',
     defaultAmountMonthly: 1500,
     defaultBillingCycle: 'monthly',
@@ -809,5 +833,4 @@ export const SERVICES: ServiceTemplate[] = [
 
 ];
 
-/** 登録サービス件数（プランを含まないエントリ数） */
 export const SERVICES_COUNT = SERVICES.length;

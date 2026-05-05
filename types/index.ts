@@ -163,6 +163,7 @@ export interface ServiceTemplate {
   cancellationNotes?: string;
   cancellationDifficulty?: CancellationDifficulty;
   duplicateGroupId?: string;
+   aliases?: string[];
 
   // ── v2.1 追加（任意項目） ──────────────────────────────────────
 
