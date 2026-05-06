@@ -38,19 +38,20 @@ const notoSansJP = Noto_Sans_JP({
 const APP_URL  = process.env.NEXT_PUBLIC_APP_URL ?? 'https://fixless.vercel.app';
 const APP_NAME = 'FixLess';
 const APP_DESC =
-  'サブスク・固定費を見える化して毎月の節約を実現。重複サブスクの検出、解約ガイド、次回請求日の管理が無料でできる節約アシスタントアプリ。';
+  '増えすぎた月額ツール費、見直せていますか？FixLessは、フリーランス・副業者向けに、ChatGPT・Claude・Canva・Adobe・NotionなどのSaaS・サブスク経費を見える化し、ムダな固定費を減らすアプリです。';
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
 
   title: {
-    default:  `${APP_NAME} — 固定費を減らす節約アプリ`,
+    default:  `${APP_NAME} — フリーランス向けSaaS経費見える化`,
     template: `%s | ${APP_NAME}`,
   },
   description: APP_DESC,
   keywords: [
-    'サブスク管理', '固定費', '節約', '解約', 'サブスクリプション',
-    'Netflix', 'Spotify', '家計', '節約アプリ', '固定費見直し',
+    'SaaS管理', 'サブスク管理', 'フリーランス', '副業', '経費管理',
+    'ChatGPT', 'Claude', 'Canva', 'Adobe', 'Notion',
+    '固定費', '節約', '経費見える化', 'ツール費',
   ],
 
   authors:   [{ name: APP_NAME }],
@@ -78,7 +79,7 @@ export const metadata: Metadata = {
     locale:      'ja_JP',
     url:          APP_URL,
     siteName:    APP_NAME,
-    title:       `${APP_NAME} — 固定費を減らす節約アプリ`,
+    title:       `${APP_NAME} — フリーランス向けSaaS経費見える化`,
     description: APP_DESC,
     // OGP画像は Phase 2 で追加
     // images: [{ url: `${APP_URL}/og-image.png`, width: 1200, height: 630 }],
@@ -87,7 +88,7 @@ export const metadata: Metadata = {
   // Twitter Card
   twitter: {
     card:        'summary',
-    title:       `${APP_NAME} — 固定費を減らす節約アプリ`,
+    title:       `${APP_NAME} — フリーランス向けSaaS経費見える化`,
     description: APP_DESC,
   },
 
