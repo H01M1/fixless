@@ -14,6 +14,7 @@ import { UserMenu } from '@/components/auth/UserMenu';
 import { SyncPrompt } from '@/components/auth/SyncPrompt';
 import { LoginButton } from '@/components/auth/LoginButton';
 import { useAuth } from '@/hooks/useAuth';
+import { DuplicateAlerts } from '@/components/dashboard/DuplicateAlerts';
 
 export default function DashboardPage() {
   const { subscriptions, loading, error, deleteSubscription } = useSubscriptions();
@@ -42,7 +43,7 @@ export default function DashboardPage() {
       <header className="flex items-center justify-between px-5 pt-5 pb-2">
         <div>
           <h1 className="text-xl font-black text-indigo-700 tracking-tight">FixLess</h1>
-          <p className="text-[10px] text-slate-400 font-medium mt-0.5">固定費を減らす節約アシスタント</p>
+          <p className="text-[10px] text-slate-400 font-medium mt-0.5">SaaS・サブスク経費を見える化</p>
         </div>
         <div className="flex items-center gap-2">
           <UserMenu />
@@ -66,6 +67,10 @@ export default function DashboardPage() {
 
       {!loading && (
         <SyncPrompt subscriptionCount={subscriptions.length} />
+      )}
+
+      {!loading && (
+        <DuplicateAlerts opportunities={summary.savingOpportunities} />
       )}
 
       {!loading && (
