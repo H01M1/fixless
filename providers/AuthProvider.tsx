@@ -28,15 +28,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getSupabaseClient();
     if (!supabase) { setLoading(false); return; }
 
-    supabase.auth.getSession().then((res: { data: { session: Session | null } }) => {
-      setUser(res.data.session?.user ?? null);
-      setLoading(false);
-    });
+    let cancelled = false;
+
+    // 保険: 5秒経ってもgetSessionが終わらなかったら強制的にloading解除
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) {
+        console.warn('[AuthProvider] getSession timeout - forcing loading=false');
+        setLoading(false);
+      }
+    }, 5000);
+
+    supabase.auth.getSession()
+      .then((res: { data: { session: Session | null } }) => {
+        if (cancelled) return;
+        clearTimeout(timeoutId);
+        setUser(res.data.session?.user ?? null);
+        setLoading(false);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        clearTimeout(timeoutId);
+        console.error('[AuthProvider] getSession error:', err);
+        setUser(null);
+        setLoading(false);
+      });
 
     const { data: { subscription: authListener } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
+        if (cancelled) return;
         const newUser = session?.user ?? null;
         setUser(newUser);
+        setLoading(false);
         if (event === 'SIGNED_IN' && newUser && hasLocalStorageData()) {
           try {
             await migrateLocalToSupabase(newUser.id);
@@ -47,7 +69,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     );
 
-    return () => { authListener.unsubscribe(); };
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+      authListener.unsubscribe();
+    };
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
