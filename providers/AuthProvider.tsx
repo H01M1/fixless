@@ -15,6 +15,8 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
+  signUpWithEmail: (email: string, password: string) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -30,7 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let cancelled = false;
 
-    // 保険: 5秒経ってもgetSessionが終わらなかったら強制的にloading解除
     const timeoutId = setTimeout(() => {
       if (!cancelled) {
         console.warn('[AuthProvider] getSession timeout - forcing loading=false');
@@ -85,6 +86,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const signInWithEmail = useCallback(async (email: string, password: string) => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return { error: 'Supabase未初期化' };
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      // 日本語化
+      if (error.message.includes('Invalid login credentials')) {
+        return { error: 'メールアドレスまたはパスワードが間違っています' };
+      }
+      if (error.message.includes('Email not confirmed')) {
+        return { error: 'メール確認が完了していません。受信箱をご確認ください' };
+      }
+      return { error: error.message };
+    }
+    return { error: null };
+  }, []);
+
+  const signUpWithEmail = useCallback(async (email: string, password: string) => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return { error: 'Supabase未初期化', needsConfirmation: false };
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      if (error.message.includes('already registered')) {
+        return { error: 'このメールアドレスは登録済みです', needsConfirmation: false };
+      }
+      if (error.message.includes('Password should be')) {
+        return { error: 'パスワードは6文字以上にしてください', needsConfirmation: false };
+      }
+      return { error: error.message, needsConfirmation: false };
+    }
+
+    // セッションが返ってこない = 確認メール送信済み
+    const needsConfirmation = !data.session;
+    return { error: null, needsConfirmation };
+  }, []);
+
   const signOut = useCallback(async () => {
     const supabase = getSupabaseClient();
     if (!supabase) return;
@@ -93,7 +139,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      signInWithGoogle,
+      signInWithEmail,
+      signUpWithEmail,
+      signOut,
+    }}>
       {children}
     </AuthContext.Provider>
   );
