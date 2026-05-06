@@ -12,9 +12,12 @@ import { SavingBanner } from '@/components/dashboard/SavingBanner';
 import { SubscriptionList } from '@/components/dashboard/SubscriptionList';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { SyncPrompt } from '@/components/auth/SyncPrompt';
+import { LoginButton } from '@/components/auth/LoginButton';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function DashboardPage() {
   const { subscriptions, loading, error, deleteSubscription } = useSubscriptions();
+  const { user } = useAuth();
   const summary = useMemo(() => {
     const dismissedIds = getDismissedOpportunityIds();
     return calcDashboardSummary(subscriptions, dismissedIds);
@@ -43,6 +46,9 @@ export default function DashboardPage() {
         </div>
         <div className="flex items-center gap-2">
           <UserMenu />
+          {!user && !loading && (
+            <LoginButton compact />
+          )}
           <Link href="/add" className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm active:bg-indigo-700 transition-colors">
             <PlusCircle size={15} strokeWidth={2.5} />
             追加
