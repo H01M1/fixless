@@ -37,8 +37,7 @@ export function SamplePreview() {
       {/* ─── セクションヘッダー：USE CASE 風の大きい見出し ─── */}
       <div className="bg-gradient-to-r from-amber-50 to-yellow-50 px-5 py-5 border-b border-amber-200">
         {/* USE CASE バッジ */}
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-200/70 mb-2.5">
-          <span className="text-sm" aria-hidden="true">👀</span>
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-200/70 mb-2.5">  
           <span className="text-amber-900 text-[10px] font-black tracking-widest">
             USE CASE / 実用例
           </span>
