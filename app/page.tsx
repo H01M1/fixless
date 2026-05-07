@@ -7,24 +7,37 @@ import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { calcDashboardSummary } from '@/lib/savings';
 import { getDismissedOpportunityIds } from '@/lib/storage';
 import { formatCurrency, formatDate, formatDaysUntil } from '@/lib/billing';
+import { getSampleSubscriptions } from '@/lib/sampleData';
 import { SummaryCard, SummaryCardSkeleton } from '@/components/dashboard/SummaryCard';
 import { SavingBanner } from '@/components/dashboard/SavingBanner';
 import { SubscriptionList } from '@/components/dashboard/SubscriptionList';
+import { DuplicateAlerts } from '@/components/dashboard/DuplicateAlerts';
+import { DemoBanner } from '@/components/dashboard/DemoBanner';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { SyncPrompt } from '@/components/auth/SyncPrompt';
 import { LoginButton } from '@/components/auth/LoginButton';
 import { useAuth } from '@/hooks/useAuth';
-import { DuplicateAlerts } from '@/components/dashboard/DuplicateAlerts';
 
 export default function DashboardPage() {
   const { subscriptions, loading, error, deleteSubscription } = useSubscriptions();
   const { user } = useAuth();
+
+  // 実データが空のときはサンプルデータを使う
+  const isDemo = !loading && subscriptions.length === 0;
+  const displaySubs = useMemo(() => {
+    return isDemo ? getSampleSubscriptions() : subscriptions;
+  }, [isDemo, subscriptions]);
+
   const summary = useMemo(() => {
-    const dismissedIds = getDismissedOpportunityIds();
-    return calcDashboardSummary(subscriptions, dismissedIds);
-  }, [subscriptions]);
+    const dismissedIds = isDemo ? [] : getDismissedOpportunityIds();
+    return calcDashboardSummary(displaySubs, dismissedIds);
+  }, [displaySubs, isDemo]);
+
   const visibleOpportunities = summary.savingOpportunities.filter((op) => !op.dismissed);
   const urgentBillings = summary.upcomingBillings.filter((b) => b.isUrgent);
+
+  // デモ時の削除はノーオペ
+  const handleDelete = isDemo ? async () => {} : deleteSubscription;
 
   if (error) {
     return (
@@ -57,6 +70,8 @@ export default function DashboardPage() {
         </div>
       </header>
 
+      {isDemo && <DemoBanner />}
+
       {loading ? <SummaryCardSkeleton /> : (
         <SummaryCard
           totalMonthly={summary.totalMonthly}
@@ -65,7 +80,7 @@ export default function DashboardPage() {
         />
       )}
 
-      {!loading && (
+      {!loading && !isDemo && (
         <SyncPrompt subscriptionCount={subscriptions.length} />
       )}
 
@@ -100,16 +115,18 @@ export default function DashboardPage() {
       )}
 
       <section className="mt-5">
-        {!loading && subscriptions.length > 0 && (
+        {!loading && displaySubs.length > 0 && (
           <div className="flex items-center justify-between px-4 mb-3">
-            <h2 className="text-sm font-bold text-slate-600">登録中のサブスク</h2>
+            <h2 className="text-sm font-bold text-slate-600">
+              {isDemo ? '登録例' : '登録中のサブスク'}
+            </h2>
             <span className="text-xs text-slate-400">月額が高い順</span>
           </div>
         )}
         <SubscriptionList
-          subscriptions={subscriptions}
+          subscriptions={displaySubs}
           loading={loading}
-          onDelete={deleteSubscription}
+          onDelete={handleDelete}
         />
       </section>
       <div className="h-6" />
