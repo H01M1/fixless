@@ -36,9 +36,9 @@ const notoSansJP = Noto_Sans_JP({
 // ================================================================
 
 const APP_URL  = process.env.NEXT_PUBLIC_APP_URL ?? 'https://fixless.vercel.app';
-const APP_NAME = 'FixLess';
+const APP_NAME = 'ミナオス';
 const APP_DESC =
-  '増えすぎた月額ツール費、見直せていますか？FixLessは、フリーランス・副業者向けに、ChatGPT・Claude・Canva・Adobe・NotionなどのSaaS・サブスク経費を見える化し、ムダな固定費を減らすアプリです。';
+  '増えすぎた月額ツール費、見直せていますか？ミナオス（Minaosu）は、フリーランス・副業者向けに、ChatGPT・Claude・Canva・Adobe・NotionなどのSaaS・サブスク経費を見える化し、ムダな固定費を減らすアプリです。';
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
