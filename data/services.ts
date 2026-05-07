@@ -1295,7 +1295,448 @@ export const SERVICES: ServiceTemplate[] = [
 4. 解約理由を選択して完了する`,
     cancellationNotes: `解約後も当月末まで利用できます。\n${DISCLAIMER}`,
   },
+// ============================================================
+  // AI・生成AI（ai）— v3 追加分
+  // ============================================================
 
+  {
+    id: 'perplexity-pro',
+    name: 'Perplexity Pro',
+    nameKana: 'ぱーぷれきしてぃぷろ',
+    category: 'ai',
+    provider: 'Perplexity',
+    appStoreLikely: false,
+    aliases: ['perplexity', 'パープレキシティ', 'perplexity ai'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=perplexity.ai&sz=64',
+    defaultAmountMonthly: 3000,
+    defaultBillingCycle: 'monthly',
+    duplicateGroupId: 'ai_assistant_jp',
+    strengths: [
+      '出典つきで回答してくれるので情報の検証がしやすい',
+      'リアルタイム検索とAI回答を組み合わせられる',
+    ],
+    weaknesses: [
+      'チャット汎用性は ChatGPT・Claude が優れる場合がある',
+    ],
+    bestFor: ['リサーチ・情報収集を多く行う', '出典・ソース確認を重視する'],
+    alternativeIds: ['chatgpt', 'claude'],
+    cancellationUrl: 'https://www.perplexity.ai/settings',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Perplexity にログインする
+2. 設定 →「Subscription」を選択
+3.「Cancel Subscription」をクリック`,
+    cancellationNotes: `解約後も請求期間末日まで利用できます。\n${DISCLAIMER}`,
+  },
+
+  // ============================================================
+  // クラウドストレージ（cloud）— v3 追加分
+  // ============================================================
+
+  {
+    id: 'dropbox-plus',
+    name: 'Dropbox Plus',
+    nameKana: 'どろっぷぼっくすぷらす',
+    category: 'cloud',
+    provider: 'Dropbox',
+    appStoreLikely: false,
+    aliases: ['dropbox', 'ドロップボックス', 'dropbox individual'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=dropbox.com&sz=64',
+    defaultAmountMonthly: 1500,
+    defaultBillingCycle: 'monthly',
+    duplicateGroupId: 'cloud_storage_jp',
+    strengths: [
+      '安定したファイル同期と共有リンク機能',
+      '多くの外部ツールと連携できる',
+    ],
+    weaknesses: [
+      '月額が iCloud+ や Google One より割高な場合がある',
+    ],
+    bestFor: ['複数デバイス間で大量ファイルを同期したい', '外部とファイル共有を頻繁にする'],
+    alternativeIds: ['icloud', 'google-one'],
+    cancellationUrl: 'https://www.dropbox.com/account/plan',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Dropbox にログインする
+2. 右上アイコン →「設定」→「プラン」を選択
+3.「プランをキャンセル」をクリック`,
+    cancellationNotes: `解約後も請求期間末日まで Plus 機能を利用できます。\n${DISCLAIMER}`,
+  },
+
+  // ============================================================
+  // ソフトウェア・ツール（software）— v3 追加分
+  // ============================================================
+
+  // === デザイン ===
+  {
+    id: 'figma',
+    name: 'Figma',
+    nameKana: 'ふぃぐま',
+    category: 'software',
+    provider: 'Figma',
+    appStoreLikely: false,
+    aliases: ['figma professional', 'figma design'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=figma.com&sz=64',
+    defaultAmountMonthly: 2250,
+    defaultBillingCycle: 'monthly',
+    strengths: [
+      'UI/UX デザインの業界標準ツール',
+      'リアルタイムで複数人がコラボできる',
+    ],
+    weaknesses: ['個人利用なら無料プランで十分なことが多い'],
+    bestFor: ['チームで UI/UX デザインを行う', 'プロトタイプを共同編集する'],
+    cancellationUrl: 'https://www.figma.com/settings/plan',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Figma にログインする
+2. 右上アイコン →「Settings」→「Plans」を選択
+3.「Cancel plan」をクリック`,
+    cancellationNotes: `解約後はフリープランに戻ります。\n${DISCLAIMER}`,
+  },
+
+  // === 開発ツール ===
+  {
+    id: 'github',
+    name: 'GitHub',
+    nameKana: 'ぎっとはぶ',
+    category: 'software',
+    provider: 'GitHub',
+    appStoreLikely: false,
+    aliases: ['github pro', 'github team', 'githubpro'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=github.com&sz=64',
+    defaultAmountMonthly: 600,
+    defaultBillingCycle: 'monthly',
+    strengths: [
+      'プライベートリポジトリ無制限',
+      'GitHub Actions の利用枠が拡大',
+    ],
+    weaknesses: ['無料プランでもプライベートリポジトリは作れる'],
+    bestFor: ['副業・個人開発でプライベートコードを管理する', 'GitHub Actions を多用する'],
+    cancellationUrl: 'https://github.com/settings/billing',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. GitHub にログインする
+2. 右上アイコン →「Settings」→「Billing and plans」を選択
+3.「Downgrade to Free」をクリック`,
+    cancellationNotes: `解約後は無料プランに戻ります。\n${DISCLAIMER}`,
+  },
+
+  {
+    id: 'vercel-pro',
+    name: 'Vercel Pro',
+    nameKana: 'ばーせるぷろ',
+    category: 'software',
+    provider: 'Vercel',
+    appStoreLikely: false,
+    aliases: ['vercel', 'バーセル'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=vercel.com&sz=64',
+    defaultAmountMonthly: 3000,
+    defaultBillingCycle: 'monthly',
+    strengths: [
+      'Next.js のホスティングとして最適化',
+      'プレビューデプロイ・Edge Functions が充実',
+    ],
+    weaknesses: ['個人 Hobby プランで十分な場合が多い'],
+    bestFor: ['商用 Web アプリをホスティングする', 'チームでデプロイ管理をする'],
+    cancellationUrl: 'https://vercel.com/account/plans',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Vercel にログインする
+2. アカウント設定 →「Plans」を選択
+3.「Downgrade」をクリック`,
+    cancellationNotes: `解約後は Hobby プランに戻ります。\n${DISCLAIMER}`,
+  },
+
+  {
+    id: 'cursor-pro',
+    name: 'Cursor Pro',
+    nameKana: 'かーそるぷろ',
+    category: 'software',
+    provider: 'Cursor',
+    appStoreLikely: false,
+    aliases: ['cursor', 'cursor ai', 'カーソル'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=cursor.sh&sz=64',
+    defaultAmountMonthly: 3000,
+    defaultBillingCycle: 'monthly',
+    strengths: [
+      'AI と一体化したコードエディタ',
+      'Claude / GPT を切り替えてコード生成・修正ができる',
+    ],
+    weaknesses: ['GitHub Copilot などと重複契約しているとコストが重なる'],
+    bestFor: ['AI 支援を前提に開発する', 'コード生成・リファクタを高速化したい'],
+    notBestFor: ['Copilot と両方契約している場合（どちらか 1 つで十分）'],
+    alternativeIds: ['copilot-pro'],
+    cancellationUrl: 'https://www.cursor.sh/settings',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Cursor にログインする
+2. 設定 →「Account」→「Subscription」を選択
+3.「Cancel Subscription」をクリック`,
+    cancellationNotes: `解約後はフリープランに戻ります。\n${DISCLAIMER}`,
+  },
+
+  {
+    id: 'supabase-pro',
+    name: 'Supabase Pro',
+    nameKana: 'すーぱーべーすぷろ',
+    category: 'software',
+    provider: 'Supabase',
+    appStoreLikely: false,
+    aliases: ['supabase', 'スーパーベース'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=supabase.com&sz=64',
+    defaultAmountMonthly: 3750,
+    defaultBillingCycle: 'monthly',
+    strengths: [
+      'PostgreSQL ベースの BaaS',
+      '認証・ストレージ・リアルタイム機能を統合',
+    ],
+    weaknesses: ['個人プロジェクトなら Free プランで十分な場合がある'],
+    bestFor: ['本番運用するアプリのバックエンド', 'データベースのスリープを避けたい'],
+    cancellationUrl: 'https://supabase.com/dashboard/account/billing',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Supabase ダッシュボードにログイン
+2. Account →「Billing」を選択
+3.「Downgrade to Free」をクリック`,
+    cancellationNotes: `Free プランに戻すと一部機能・容量に制限がかかります。\n${DISCLAIMER}`,
+  },
+
+  // === 業務 ===
+  {
+    id: 'google-workspace',
+    name: 'Google Workspace',
+    nameKana: 'ぐーぐるわーくすぺーす',
+    category: 'software',
+    provider: 'Google',
+    appStoreLikely: false,
+    aliases: ['gworkspace', 'google workspace business', 'g suite', 'gsuite'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=workspace.google.com&sz=64',
+    defaultAmountMonthly: 816,
+    defaultBillingCycle: 'monthly',
+    strengths: [
+      '独自ドメインのビジネスメール',
+      'Gmail・Drive・Meet・Calendar の統合',
+    ],
+    weaknesses: ['個人利用なら通常の Gmail で十分'],
+    bestFor: ['独自ドメインメールを使いたいフリーランス', 'チーム/法人で利用'],
+    cancellationUrl: 'https://admin.google.com/ac/billing/subscriptions',
+    cancellationDifficulty: 'medium',
+    cancellationSteps: `1. Google Workspace 管理コンソールにログイン
+2.「お支払い」→「サブスクリプション」を選択
+3.「サブスクリプションをキャンセル」をクリック`,
+    cancellationNotes: `解約するとビジネスメールが使えなくなります。\n${DISCLAIMER}`,
+  },
+
+  {
+    id: 'slack',
+    name: 'Slack',
+    nameKana: 'すらっく',
+    category: 'software',
+    provider: 'Slack',
+    appStoreLikely: false,
+    aliases: ['slack pro', 'slack standard', 'slack business'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=slack.com&sz=64',
+    defaultAmountMonthly: 925,
+    defaultBillingCycle: 'monthly',
+    strengths: [
+      'メッセージ履歴が無制限で保存される',
+      '外部サービス連携が豊富',
+    ],
+    weaknesses: ['個人や小規模チームなら無料プランで十分'],
+    bestFor: ['チームで本格的にコミュニケーション', '過去メッセージ検索が必要'],
+    cancellationUrl: 'https://my.slack.com/admin/billing',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Slack ワークスペースに管理者としてログイン
+2.「設定と管理」→「課金情報」を選択
+3.「プランの変更」→「Free に戻す」をクリック`,
+    cancellationNotes: `Free プランに戻すと過去 90 日以前のメッセージが見られなくなります。\n${DISCLAIMER}`,
+  },
+
+  {
+    id: 'zoom-pro',
+    name: 'Zoom Pro',
+    nameKana: 'ずーむぷろ',
+    category: 'software',
+    provider: 'Zoom',
+    appStoreLikely: false,
+    aliases: ['zoom', 'ズーム', 'zoom one pro'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=zoom.us&sz=64',
+    defaultAmountMonthly: 1917,
+    defaultBillingCycle: 'monthly',
+    strengths: [
+      '40 分の制限なしでミーティング可能',
+      'クラウドレコーディング対応',
+    ],
+    weaknesses: ['40 分以内のミーティングしかしないなら Free で十分'],
+    bestFor: ['長時間のオンライン会議が多い', '録画して議事録を作りたい'],
+    cancellationUrl: 'https://zoom.us/billing/plan',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Zoom にログインする
+2.「アカウント管理」→「請求情報」を選択
+3.「サブスクリプションのキャンセル」をクリック`,
+    cancellationNotes: `解約後は Basic プランに戻ります。\n${DISCLAIMER}`,
+  },
+
+  // === 会計 ===
+  {
+    id: 'freee-accounting',
+    name: 'freee 会計',
+    nameKana: 'ふりーかいけい',
+    category: 'software',
+    provider: 'freee',
+    appStoreLikely: false,
+    aliases: ['freee', 'フリー会計', 'フリー'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=freee.co.jp&sz=64',
+    defaultAmountMonthly: 1180,
+    defaultBillingCycle: 'monthly',
+    duplicateGroupId: 'accounting_jp',
+    strengths: [
+      '個人事業主・フリーランス向け機能が充実',
+      '銀行・カード自動連携、確定申告書類の自動作成',
+    ],
+    weaknesses: ['会計ソフト同士で重複契約は不要'],
+    bestFor: ['個人事業主・フリーランスの確定申告', 'クラウド会計を使いたい'],
+    notBestFor: ['マネーフォワード/弥生 と重複契約している場合'],
+    alternativeIds: ['moneyforward-cloud', 'yayoi-online'],
+    cancellationUrl: 'https://app.secure.freee.co.jp/settings/account_settings',
+    cancellationDifficulty: 'medium',
+    cancellationSteps: `1. freee にログインする
+2. 設定 →「アカウント設定」→「契約状況」を選択
+3.「解約」をクリック`,
+    cancellationNotes: `解約後はデータの閲覧・編集に制限がかかります。事前にエクスポートしてください。\n${DISCLAIMER}`,
+  },
+
+  {
+    id: 'moneyforward-cloud',
+    name: 'マネーフォワード クラウド確定申告',
+    nameKana: 'まねーふぉわーど',
+    category: 'software',
+    provider: 'マネーフォワード',
+    appStoreLikely: false,
+    aliases: ['マネーフォワード', 'moneyforward', 'マネフォ', 'moneyforward cloud'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=moneyforward.com&sz=64',
+    defaultAmountMonthly: 800,
+    defaultBillingCycle: 'monthly',
+    duplicateGroupId: 'accounting_jp',
+    strengths: [
+      '個人/法人プランが分かれていて選びやすい',
+      '銀行・カードの自動連携対応',
+    ],
+    weaknesses: ['会計ソフト同士で重複契約は不要'],
+    bestFor: ['家計簿（マネーフォワード ME）と統合管理したい', '個人事業主の確定申告'],
+    alternativeIds: ['freee-accounting', 'yayoi-online'],
+    cancellationUrl: 'https://accounting.moneyforward.com/my_account/contracts',
+    cancellationDifficulty: 'medium',
+    cancellationSteps: `1. マネーフォワードクラウドにログイン
+2. マイアカウント →「契約情報」を選択
+3.「解約する」をクリック`,
+    cancellationNotes: `解約後はデータ閲覧期限が設定されます。事前にエクスポートしてください。\n${DISCLAIMER}`,
+  },
+
+  {
+    id: 'yayoi-online',
+    name: '弥生会計オンライン',
+    nameKana: 'やよいかいけい',
+    category: 'software',
+    provider: '弥生',
+    appStoreLikely: false,
+    aliases: ['弥生', 'yayoi', '弥生会計', '弥生会計オンライン'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=yayoi-kk.co.jp&sz=64',
+    defaultAmountMonthly: 2950,
+    defaultBillingCycle: 'monthly',
+    duplicateGroupId: 'accounting_jp',
+    strengths: [
+      '会計ソフト国内シェア No.1',
+      '電話・メール・チャットサポートが充実',
+    ],
+    weaknesses: ['月額が他の会計ソフトより高め', '会計ソフト同士で重複契約は不要'],
+    bestFor: ['サポートを重視する', '従来の弥生製品からの移行'],
+    alternativeIds: ['freee-accounting', 'moneyforward-cloud'],
+    cancellationUrl: 'https://www.yayoi-kk.co.jp/products/account-online/',
+    cancellationDifficulty: 'medium',
+    cancellationSteps: `1. 弥生会計オンラインにログインする
+2. マイページ →「契約状況」を選択
+3.「解約手続き」へ進み、画面の指示に従って完了する`,
+    cancellationNotes: `解約後はデータ閲覧期限が設定されます。事前にエクスポートしてください。\n${DISCLAIMER}`,
+  },
+
+  // ============================================================
+  // 学習・語学（education）— v3 追加分
+  // ============================================================
+
+  {
+    id: 'udemy-personal',
+    name: 'Udemy Personal Plan',
+    nameKana: 'ゆーでみー',
+    category: 'education',
+    provider: 'Udemy',
+    appStoreLikely: false,
+    aliases: ['udemy', 'ユーデミー', 'udemy personal'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=udemy.com&sz=64',
+    defaultAmountMonthly: 2300,
+    defaultBillingCycle: 'monthly',
+    duplicateGroupId: 'learning_platform_jp',
+    strengths: [
+      '幅広い分野（IT・デザイン・ビジネス）が学び放題',
+      '個別購入よりお得な定額プラン',
+    ],
+    weaknesses: ['対象コースが限定される', '大量視聴しないと元が取れない'],
+    bestFor: ['複数分野を継続的に学習する', 'IT・スキル系の学習が中心'],
+    alternativeIds: ['skillshare', 'schoo'],
+    cancellationUrl: 'https://www.udemy.com/user/edit-account/',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Udemy にログインする
+2.「アカウント設定」→「サブスクリプション」を選択
+3.「キャンセルする」をクリック`,
+    cancellationNotes: `解約後も請求期間末日まで利用できます。\n${DISCLAIMER}`,
+  },
+
+  {
+    id: 'skillshare',
+    name: 'Skillshare',
+    nameKana: 'すきるしぇあ',
+    category: 'education',
+    provider: 'Skillshare',
+    appStoreLikely: false,
+    aliases: ['skill share', 'スキルシェア'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=skillshare.com&sz=64',
+    defaultAmountMonthly: 1400,
+    defaultBillingCycle: 'monthly',
+    duplicateGroupId: 'learning_platform_jp',
+    strengths: [
+      'クリエイティブ系（イラスト・動画編集・写真）コースが充実',
+      '英語コースが豊富',
+    ],
+    weaknesses: ['日本語コースが少ない'],
+    bestFor: ['クリエイティブ・デザイン系を学びたい', '英語学習も兼ねたい'],
+    alternativeIds: ['udemy-personal', 'schoo'],
+    cancellationUrl: 'https://www.skillshare.com/profile/settings',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Skillshare にログインする
+2. プロフィール →「Account Settings」→「Payments」を選択
+3.「Cancel Membership」をクリック`,
+    cancellationNotes: `解約後も請求期間末日まで利用できます。\n${DISCLAIMER}`,
+  },
+
+  {
+    id: 'schoo',
+    name: 'Schoo',
+    nameKana: 'すくー',
+    category: 'education',
+    provider: 'Schoo',
+    appStoreLikely: false,
+    aliases: ['schoo premium', 'スクー'],
+    iconUrl: 'https://www.google.com/s2/favicons?domain=schoo.jp&sz=64',
+    defaultAmountMonthly: 980,
+    defaultBillingCycle: 'monthly',
+    duplicateGroupId: 'learning_platform_jp',
+    strengths: [
+      '日本語のビジネス・スキル系授業が充実',
+      '生放送授業がある',
+    ],
+    weaknesses: ['クリエイティブ系は Skillshare の方が充実する場合がある'],
+    bestFor: ['日本語でビジネススキルを学びたい', '社会人のスキルアップ'],
+    alternativeIds: ['udemy-personal', 'skillshare'],
+    cancellationUrl: 'https://schoo.jp/account/payment',
+    cancellationDifficulty: 'easy',
+    cancellationSteps: `1. Schoo にログインする
+2. アカウント設定 →「お支払い情報」を選択
+3.「プレミアム会員を解約する」をクリック`,
+    cancellationNotes: `解約後は無料会員に戻ります。\n${DISCLAIMER}`,
+  },
 ];
 
 export const SERVICES_COUNT = SERVICES.length;
