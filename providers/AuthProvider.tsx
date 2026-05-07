@@ -165,9 +165,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     const supabase = getSupabaseClient();
-    if (!supabase) return;
-    await supabase.auth.signOut();
-    setUser(null);
+    if (!supabase) {
+      setUser(null);
+      return;
+    }
+
+    try {
+      // signOut が固まる場合があるので3秒タイムアウトで保護
+      // （無効なリフレッシュトークン等が原因で稀に Promise が解決しない）
+      await Promise.race([
+        supabase.auth.signOut(),
+        new Promise<void>((resolve) => setTimeout(resolve, 3000)),
+      ]);
+    } catch (err) {
+      console.error('[AuthProvider] signOut error (continuing):', err);
+    } finally {
+      // signOut が成功・失敗・タイムアウトのいずれでも user を null にする
+      setUser(null);
+    }
   }, []);
 
   return (

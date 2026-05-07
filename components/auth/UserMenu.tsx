@@ -5,23 +5,27 @@
  * =============================
  * ログイン済みユーザーのアバター・メールアドレス・ログアウトボタン。
  * 未ログインの場合は何も表示しない。
+ *
+ * v2 変更点:
+ * - ドロップダウンに「プロフィール」リンクを追加
  */
 
 import { useState } from 'react';
-import { LogOut, ChevronDown, Cloud } from 'lucide-react';
+import Link from 'next/link';
+import { LogOut, ChevronDown, Cloud, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export function UserMenu() {
   const { user, signOut, loading } = useAuth();
-  const [isOpen, setIsOpen]       = useState(false);
+  const [isOpen, setIsOpen]             = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   // 未ログインまたはローディング中は何も表示しない
   if (loading || !user) return null;
 
-  const email      = user.email ?? '';
-  const avatarUrl  = user.user_metadata?.avatar_url as string | undefined;
-  const initial    = email.charAt(0).toUpperCase();
+  const email     = user.email ?? '';
+  const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+  const initial   = email.charAt(0).toUpperCase();
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -101,6 +105,22 @@ export function UserMenu() {
                 </p>
               </div>
             </div>
+
+            {/* プロフィールリンク（v2 追加） */}
+            <Link
+              href="/profile"
+              onClick={() => setIsOpen(false)}
+              className="
+                w-full flex items-center gap-3 px-4 py-3
+                text-sm text-slate-700 font-medium
+                hover:bg-slate-50 active:bg-slate-50
+                border-b border-slate-100
+                transition-colors
+              "
+            >
+              <User size={15} strokeWidth={2} />
+              プロフィール
+            </Link>
 
             {/* ログアウトボタン */}
             <button
