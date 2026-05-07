@@ -3,33 +3,51 @@
  * ========================================
  * サブスクが 0 件のとき、ホーム画面の下部に表示する「使い方の例」セクション。
  *
- * デザイン v2:
- * - 全体を枠（カード）で囲んで明確に「サンプル領域」と分かる
- * - 上部に「USE CASE」バッジと大きい見出しで実用例感を出す
- * - 「自分のデータ（空）」とは完全に視覚分離
+ * v3 変更点:
+ * - 複数ペルソナ（デザイナー / エンジニア / ライター）対応
+ * - 上部にタブを追加して切り替え可能
+ * - 各ペルソナで重複検出・節約候補・請求アラートが動作
  */
 
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { calcDashboardSummary } from '@/lib/savings';
-import { getSampleSubscriptions } from '@/lib/sampleData';
+import { SAMPLE_PERSONAS } from '@/lib/sampleData';
 import { SummaryCard } from './SummaryCard';
 import { DuplicateAlerts } from './DuplicateAlerts';
 import { SavingBanner } from './SavingBanner';
 import { SubscriptionList } from './SubscriptionList';
 
 export function SamplePreview() {
-  const sampleSubs = useMemo(() => getSampleSubscriptions(), []);
+  // タブで選択中のペルソナID
+  const [activePersonaId, setActivePersonaId] = useState<string>(SAMPLE_PERSONAS[0].id);
+
+  // 選択中のペルソナオブジェクト
+  const activePersona = useMemo(
+    () => SAMPLE_PERSONAS.find((p) => p.id === activePersonaId) ?? SAMPLE_PERSONAS[0],
+    [activePersonaId],
+  );
+
+  // 選択中ペルソナのサブスク一覧
+  const sampleSubs = useMemo(
+    () => activePersona.getSubscriptions(),
+    [activePersona],
+  );
+
+  // ダッシュボード集計（重複検出・節約候補も含む）
   const summary = useMemo(
     () => calcDashboardSummary(sampleSubs, []),
     [sampleSubs],
   );
+
   const visibleOpportunities = summary.savingOpportunities.filter(
     (op) => !op.dismissed,
   );
+
+  // SubscriptionList が onDelete を要求するが、サンプルなので no-op
   const noopDelete = async () => {};
 
   return (
@@ -37,7 +55,7 @@ export function SamplePreview() {
       {/* ─── セクションヘッダー：USE CASE 風の大きい見出し ─── */}
       <div className="bg-gradient-to-r from-amber-50 to-yellow-50 px-5 py-5 border-b border-amber-200">
         {/* USE CASE バッジ */}
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-200/70 mb-2.5">  
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-200/70 mb-2.5">
           <span className="text-amber-900 text-[10px] font-black tracking-widest">
             USE CASE / 実用例
           </span>
@@ -50,8 +68,35 @@ export function SamplePreview() {
 
         {/* サブテキスト */}
         <p className="text-slate-700 text-xs leading-relaxed">
-          フリーランスデザイナーが <strong className="text-slate-900">ChatGPT・Adobe・Canva</strong> などを契約している例。<br />
-          年間コスト・重複・節約候補がひと目で分かります。
+          職種別のサンプルで、年間コスト・重複・節約候補の見え方を体験できます。
+        </p>
+      </div>
+
+      {/* ─── ペルソナ切替タブ ─── */}
+      <div className="bg-slate-50 border-b border-slate-200 px-2 pt-2 pb-3">
+        <div className="flex gap-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+          {SAMPLE_PERSONAS.map((persona) => {
+            const isActive = persona.id === activePersonaId;
+            return (
+              <button
+                key={persona.id}
+                type="button"
+                onClick={() => setActivePersonaId(persona.id)}
+                className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-bold transition-colors ${
+                  isActive
+                    ? 'bg-white text-indigo-700 shadow-sm border border-indigo-100'
+                    : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                <span className="mr-1.5">{persona.emoji}</span>
+                {persona.label}
+              </button>
+            );
+          })}
+        </div>
+        {/* アクティブペルソナの一行説明 */}
+        <p className="px-3 mt-2 text-[11px] text-slate-500 leading-relaxed">
+          {activePersona.description}
         </p>
       </div>
 
