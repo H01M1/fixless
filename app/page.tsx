@@ -2,8 +2,9 @@
 
 import { useMemo } from 'react';
 import Link from 'next/link';
-import { PlusCircle, AlertCircle } from 'lucide-react';
+import { PlusCircle, AlertCircle, Download } from 'lucide-react';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
+import { subscriptionsToCSV, downloadCSV, getDefaultCsvFilename } from '@/lib/csvExport';
 import { calcDashboardSummary } from '@/lib/savings';
 import { getDismissedOpportunityIds } from '@/lib/storage';
 import { formatCurrency, formatDate, formatDaysUntil } from '@/lib/billing';
@@ -25,6 +26,11 @@ export default function DashboardPage() {
     const dismissedIds = getDismissedOpportunityIds();
     return calcDashboardSummary(subscriptions, dismissedIds);
   }, [subscriptions]);
+
+  const handleExportCSV = () => {
+    const csv = subscriptionsToCSV(subscriptions);
+    downloadCSV(csv, getDefaultCsvFilename());
+  };
 
   const visibleOpportunities = summary.savingOpportunities.filter((op) => !op.dismissed);
   const urgentBillings = summary.upcomingBillings.filter((b) => b.isUrgent);
@@ -49,7 +55,7 @@ export default function DashboardPage() {
       <header className="flex items-center justify-between px-5 pt-5 pb-2">
         <div>
           <h1 className="text-xl font-black text-indigo-700 tracking-tight">ミナオス</h1>
-          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Minaosu · SaaS・サブスク経費を見える化</p>
+          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Minaos · SaaS・サブスク経費を見える化</p>
         </div>
         <div className="flex items-center gap-2">
           <UserMenu />
@@ -109,7 +115,17 @@ export default function DashboardPage() {
         {!loading && subscriptions.length > 0 && (
           <div className="flex items-center justify-between px-4 mb-3">
             <h2 className="text-sm font-bold text-slate-600">登録中のサブスク</h2>
-            <span className="text-xs text-slate-400">月額が高い順</span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-400">月額が高い順</span>
+              <button
+                onClick={handleExportCSV}
+                className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-700 active:text-indigo-800"
+                title="CSVダウンロード"
+              >
+                <Download size={12} strokeWidth={2.5} />
+                CSV
+              </button>
+            </div>
           </div>
         )}
         <SubscriptionList
