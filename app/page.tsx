@@ -17,6 +17,7 @@ import { UserMenu } from '@/components/auth/UserMenu';
 import { SyncPrompt } from '@/components/auth/SyncPrompt';
 import { LoginButton } from '@/components/auth/LoginButton';
 import { useAuth } from '@/hooks/useAuth';
+import { DemoFooterCTA } from '@/components/dashboard/DemoFooterCTA';
 
 export default function DashboardPage() {
   const { subscriptions, loading, error, deleteSubscription } = useSubscriptions();
@@ -129,6 +130,9 @@ export default function DashboardPage() {
           onDelete={handleDelete}
         />
       </section>
+
+      {isDemo && <DemoFooterCTA />}
+
       <div className="h-6" />
     </div>
   );
