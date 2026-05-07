@@ -178,6 +178,14 @@ export default function LoginPage() {
             {mode === 'signin' ? '新規登録' : 'ログイン'}
           </button>
         </p>
+
+        <p className="mt-6 text-center text-xs text-slate-500 leading-relaxed">
+          {mode === 'signup' ? '登録' : 'ログイン'}することで、
+          <Link href="/terms" className="text-indigo-600 hover:underline">利用規約</Link>
+          ・
+          <Link href="/privacy" className="text-indigo-600 hover:underline">プライバシーポリシー</Link>
+          に同意したものとみなされます。
+        </p>
       </div>
     </div>
   );
