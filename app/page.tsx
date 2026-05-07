@@ -7,38 +7,30 @@ import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { calcDashboardSummary } from '@/lib/savings';
 import { getDismissedOpportunityIds } from '@/lib/storage';
 import { formatCurrency, formatDate, formatDaysUntil } from '@/lib/billing';
-import { getSampleSubscriptions } from '@/lib/sampleData';
 import { SummaryCard, SummaryCardSkeleton } from '@/components/dashboard/SummaryCard';
 import { SavingBanner } from '@/components/dashboard/SavingBanner';
 import { SubscriptionList } from '@/components/dashboard/SubscriptionList';
 import { DuplicateAlerts } from '@/components/dashboard/DuplicateAlerts';
-import { DemoBanner } from '@/components/dashboard/DemoBanner';
+import { SamplePreview } from '@/components/dashboard/SamplePreview';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { SyncPrompt } from '@/components/auth/SyncPrompt';
 import { LoginButton } from '@/components/auth/LoginButton';
 import { useAuth } from '@/hooks/useAuth';
-import { DemoFooterCTA } from '@/components/dashboard/DemoFooterCTA';
 
 export default function DashboardPage() {
   const { subscriptions, loading, error, deleteSubscription } = useSubscriptions();
   const { user } = useAuth();
 
-  // 実データが空のときはサンプルデータを使う
-  const isDemo = !loading && subscriptions.length === 0;
-  const displaySubs = useMemo(() => {
-    return isDemo ? getSampleSubscriptions() : subscriptions;
-  }, [isDemo, subscriptions]);
-
   const summary = useMemo(() => {
-    const dismissedIds = isDemo ? [] : getDismissedOpportunityIds();
-    return calcDashboardSummary(displaySubs, dismissedIds);
-  }, [displaySubs, isDemo]);
+    const dismissedIds = getDismissedOpportunityIds();
+    return calcDashboardSummary(subscriptions, dismissedIds);
+  }, [subscriptions]);
 
   const visibleOpportunities = summary.savingOpportunities.filter((op) => !op.dismissed);
   const urgentBillings = summary.upcomingBillings.filter((b) => b.isUrgent);
 
-  // デモ時の削除はノーオペ
-  const handleDelete = isDemo ? async () => {} : deleteSubscription;
+  // 空のときだけ画面下部にサンプルプレビューを表示
+  const showSamplePreview = !loading && subscriptions.length === 0;
 
   if (error) {
     return (
@@ -71,8 +63,6 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {isDemo && <DemoBanner />}
-
       {loading ? <SummaryCardSkeleton /> : (
         <SummaryCard
           totalMonthly={summary.totalMonthly}
@@ -81,7 +71,7 @@ export default function DashboardPage() {
         />
       )}
 
-      {!loading && !isDemo && (
+      {!loading && (
         <SyncPrompt subscriptionCount={subscriptions.length} />
       )}
 
@@ -116,22 +106,21 @@ export default function DashboardPage() {
       )}
 
       <section className="mt-5">
-        {!loading && displaySubs.length > 0 && (
+        {!loading && subscriptions.length > 0 && (
           <div className="flex items-center justify-between px-4 mb-3">
-            <h2 className="text-sm font-bold text-slate-600">
-              {isDemo ? '登録例' : '登録中のサブスク'}
-            </h2>
+            <h2 className="text-sm font-bold text-slate-600">登録中のサブスク</h2>
             <span className="text-xs text-slate-400">月額が高い順</span>
           </div>
         )}
         <SubscriptionList
-          subscriptions={displaySubs}
+          subscriptions={subscriptions}
           loading={loading}
-          onDelete={handleDelete}
+          onDelete={deleteSubscription}
         />
       </section>
 
-      {isDemo && <DemoFooterCTA />}
+      {/* 自分のサブスクが 0 件のときだけ、画面下部にサンプル例を表示 */}
+      {showSamplePreview && <SamplePreview />}
 
       <div className="h-6" />
     </div>
