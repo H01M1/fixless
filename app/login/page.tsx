@@ -120,6 +120,13 @@ export default function LoginPage() {
                 className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
+            {mode === 'signin' && (
+              <div className="text-right mt-2">
+                <Link href="/forgot-password" className="text-xs text-indigo-600 font-medium hover:underline">
+                  パスワードを忘れた？
+                </Link>
+              </div>
+            )}
           </div>
 
           {error && (

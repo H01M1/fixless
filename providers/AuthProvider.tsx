@@ -17,6 +17,8 @@ interface AuthContextValue {
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
   signUpWithEmail: (email: string, password: string) => Promise<{ error: string | null; needsConfirmation: boolean }>;
+  resetPasswordForEmail: (email: string) => Promise<{ error: string | null }>;
+  updatePassword: (newPassword: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -130,6 +132,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const needsConfirmation = !data.session;
     return { error: null, needsConfirmation };
   }, []);
+  const resetPasswordForEmail = useCallback(async (email: string) => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return { error: 'Supabase未初期化' };
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+
+    if (error) {
+      return { error: error.message };
+    }
+    return { error: null };
+  }, []);
+
+  const updatePassword = useCallback(async (newPassword: string) => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return { error: 'Supabase未初期化' };
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      if (error.message.includes('Password should be')) {
+        return { error: 'パスワードは6文字以上にしてください' };
+      }
+      if (error.message.includes('same as the')) {
+        return { error: '現在のパスワードと同じです' };
+      }
+      return { error: error.message };
+    }
+    return { error: null };
+  }, []);
 
   const signOut = useCallback(async () => {
     const supabase = getSupabaseClient();
@@ -145,6 +177,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithGoogle,
       signInWithEmail,
       signUpWithEmail,
+      resetPasswordForEmail,
+      updatePassword,
       signOut,
     }}>
       {children}
