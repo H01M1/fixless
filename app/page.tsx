@@ -48,8 +48,8 @@ export default function DashboardPage() {
     <div className="min-h-screen">
       <header className="flex items-center justify-between px-5 pt-5 pb-2">
         <div>
-          <h1 className="text-xl font-black text-indigo-700 tracking-tight">FixLess</h1>
-          <p className="text-[10px] text-slate-400 font-medium mt-0.5">SaaS・サブスク経費を見える化</p>
+          <h1 className="text-xl font-black text-indigo-700 tracking-tight">ミナオス</h1>
+          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Minaosu · SaaS・サブスク経費を見える化</p>
         </div>
         <div className="flex items-center gap-2">
           <UserMenu />
