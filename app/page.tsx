@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import Link from 'next/link';
-import { PlusCircle, AlertCircle, Download } from 'lucide-react';
+import { PlusCircle, AlertCircle, Download, Sparkles } from 'lucide-react';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { subscriptionsToCSV, downloadCSV, getDefaultCsvFilename } from '@/lib/csvExport';
 import { calcDashboardSummary } from '@/lib/savings';
@@ -134,6 +134,24 @@ export default function DashboardPage() {
           onDelete={deleteSubscription}
         />
       </section>
+
+      {/* サブスクが 0 件のとき: まとめて登録 CTA */}
+      {showSamplePreview && (
+        <div className="mx-4 mt-5">
+          <Link
+            href="/onboarding"
+            className="block w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-5 py-4 rounded-2xl text-center shadow-md active:from-indigo-700 active:to-indigo-800 transition-all"
+          >
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <Sparkles size={18} className="text-yellow-300" strokeWidth={2.5} />
+              <span className="text-base font-bold">職種からまとめて登録</span>
+            </div>
+            <p className="text-xs text-indigo-200">
+              よく使うサブスクの候補から一括で追加できます
+            </p>
+          </Link>
+        </div>
+      )}
 
       {/* 自分のサブスクが 0 件のときだけ、画面下部にサンプル例を表示 */}
       {showSamplePreview && <SamplePreview />}
