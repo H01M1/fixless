@@ -81,7 +81,7 @@ export default function LoginPage() {
           {mode === 'signin' ? 'ログイン' : '新規登録'}
         </h1>
         <p className="text-sm text-slate-500 mb-6">
-          {mode === 'signin' ? 'FixLess アカウントにログイン' : 'FixLess アカウントを作成'}
+          {mode === 'signin' ? 'ミナオスにログイン' : 'ミナオスのアカウントを作成'}
         </p>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4">

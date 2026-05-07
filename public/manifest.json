@@ -1,7 +1,7 @@
 {
-  "name": "FixLess - 固定費を減らす節約アプリ",
-  "short_name": "FixLess",
-  "description": "サブスク・固定費を見える化して、節約候補を見つけるアプリ。重複サブスクの検出・解約ガイド・次回請求日の管理が無料でできます。",
+  "name": "ミナオス（Minaosu）- フリーランス向け SaaS 経費見える化",
+  "short_name": "ミナオス",
+  "description": "増えすぎた月額ツール費、見直せていますか？ChatGPT・Adobe・Canva など SaaS・サブスク経費を見える化して、ムダな固定費を減らすアプリ。フリーランス・副業者向け。",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
